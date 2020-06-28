@@ -136,6 +136,9 @@ while True:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     run = not run; game = not game
+                if event.key == pygame.K_r:
+                    for i in cells:
+                        for j in i: j.alive = False
         
         Grid.renderCells()
         # print(f"INITAL: cells[1][1] neighbours: {cells[1][1].neighbours}")
