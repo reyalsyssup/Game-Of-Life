@@ -47,8 +47,7 @@ class Cell():
         return renderedCell
     def setNeighbours(self):
         total = 0
-        me = [(ix,iy) for ix, row in enumerate(cells) for iy, i in enumerate(row) if i == self]
-        me = me[0]
+        me = [(ix,iy) for ix, row in enumerate(cells) for iy, i in enumerate(row) if i == self][0]
 
         TR,BR,BL,TL = None,None,None,None
         TM,BM,LM,RM = None,None,None,None
