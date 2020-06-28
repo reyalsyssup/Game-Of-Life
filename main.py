@@ -11,31 +11,27 @@ Dead cells:
 """  
 
 import pygame
-from pygame.locals import *
-import uuid
 import copy
+import uuid
 pygame.init()
-# Increases efficiency apparently
-flags = DOUBLEBUF
-pygame.event.set_allowed([QUIT, MOUSEBUTTONUP])
 
-# I wouldnt reccomend chaning this :)
-screenDimensions = (800, 600)
-display = pygame.display.set_mode(screenDimensions, flags)
+# I wouldnt reccomend changing this :)
+screenDimensions = (600, 600)
+display = pygame.display.set_mode(screenDimensions)
 display.set_alpha(None)
 run = True
 
 cells = []
 
 class Cell():
-    def __init__(self, alive, neighbours, ID, x, y, size, hovered):
+    def __init__(self, alive, neighbours, x, y, size, hovered, ID):
         self.alive = alive
         self.neighbours = neighbours
-        self.ID = ID
         self.x = x
         self.y = y
         self.size = size
         self.hovered = hovered
+        self.ID = ID
     def checkHover(self):
         pos = pygame.mouse.get_pos()
         if pos[0] > self.x and pos[0] < self.x + self.size and pos[1] > self.y and pos[1] < self.y + self.size:
@@ -46,51 +42,97 @@ class Cell():
         if self.alive: color = (255,255,255)
         else: color = (0,0,0)
         if self.hovered: color = (255,255,0)
-        renderedCell = pygame.draw.rect(display, color, (x+Grid.setCellSize()[0], y+Grid.setCellSize()[0], Grid.setCellSize()[1], Grid.setCellSize()[1]))
+        x+=1; y+=1
+        renderedCell = pygame.draw.rect(display, color, (x, y, 19, 19))
         return renderedCell
-cell = Cell(False, [], "", 0, 0, 0, False)
+    def setNeighbours(self):
+        total = 0
+        me = [(ix,iy) for ix, row in enumerate(cells) for iy, i in enumerate(row) if i == self]
+        me = me[0]
+
+        TR,BR,BL,TL = None,None,None,None
+        TM,BM,LM,RM = None,None,None,None
+        # # # # # # # CORNERS # # # # # # # #
+        try: 
+            TR = cells[me[0]+1][me[1]-1]
+            if TR.alive: total += 1
+        except: pass
+        try: 
+            BR = cells[me[0]+1][me[1]+1]
+            if BR.alive: total += 1
+        except: pass
+        try: 
+            TL = cells[me[0]-1][me[1]-1]
+            if TL.alive: total += 1
+        except: pass
+        try:
+            BL = cells[me[0]-1][me[1]+1]
+            if BL.alive: total += 1
+        except: pass
+
+        # # # # # # # # # # # EDGES # # # # # # # # # # #
+        try: 
+            TM = cells[me[0]][me[1]-1]
+            if TM.alive: total += 1
+        except: pass
+        try: 
+            BM = cells[me[0]][me[1]+1]
+            if BM.alive: total += 1
+        except: pass
+        try: 
+            LR = cells[me[0]-1][me[1]]
+            if LR.alive: total += 1
+        except: pass
+        try:
+            RM = cells[me[0]+1][me[1]]
+            if RM.alive: total += 1
+        except: pass
+        self.neighbours = total
+                        
+cell = Cell(False, 0, 0, 0, 0, False, "")
 
 class Grid:
-    def setCellSize(size=20):
-        offset = 1.25
-        totalSpace = size
-        size = screenDimensions[0]/size/2-offset
-        return (offset, size, totalSpace)
     def initCells():
         global cells
-        cells = list(range(int(screenDimensions[1]/Grid.setCellSize()[2])))
+        cells = list(range(int(screenDimensions[1]/20)))
         for i in range(len(cells)):
-            cells[i] = list(range(int(screenDimensions[0]/Grid.setCellSize()[2])))
+            cells[i] = list(range(int(screenDimensions[0]/20)))
             for j in range(len(cells[i])):
                 # MUST COPY BECAUSE OTHER WISE IT IS THE EXACT, THE EXACTT FUCKING SAME DICTIONARY (or class now ig) FUCK YOU PYTHON YOU STUPID PIECE OF SHIT KYS FAG
                 cells[i][j] = copy.deepcopy(cell)
                 cells[i][j].ID = str(uuid.uuid4())
+        cells[1][1].alive = True
+        for i in cells:
+            for j in i:
+                j.setNeighbours()
     def renderCells():
-        display.fill((255,255,255))
+        display.fill((0,0,255))
         x,y = 0,0
         for i in cells:
             for j in i:
                 j.x = x; j.y = y
-                j.size = Grid.setCellSize()[1]
+                j.size = 18.75
                 j.renderCell(x, y)
-                y+=Grid.setCellSize()[2]
-            y=0; x+=Grid.setCellSize()[2]
-    
+                j.checkHover()
+                y+=20
+            y=0; x+=20
+
 Grid.initCells()
 while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit()
         if event.type == pygame.MOUSEBUTTONUP:
-            for i in cells:
-                for j in i:
-                    if j.checkHover():
-                        j.alive = not j.alive
-    
-    for i in cells:
-        for j in i:
-            j.checkHover()
-
+            if event.button == 1:
+                for i in cells:
+                    for j in i:
+                        if j.checkHover():
+                            j.alive = not j.alive
+                            break
+                for i in cells:
+                    for j in i:
+                        j.setNeighbours()
     
     Grid.renderCells()
+    print(f"cells[1][1] neighbours: {cells[1][1].neighbours}")
     pygame.display.update() 
