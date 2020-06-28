@@ -20,6 +20,7 @@ screenDimensions = (600, 600)
 display = pygame.display.set_mode(screenDimensions)
 display.set_alpha(None)
 run = True
+game = False
 
 cells = []
 
@@ -38,7 +39,8 @@ class Cell():
             self.hovered = True
             return True
         else: self.hovered = False
-    def renderCell(self, x, y):
+    def renderCell(self, x, y, alive):
+        self.alive = alive
         if self.alive: color = (255,255,255)
         else: color = (0,0,0)
         if self.hovered: color = (255,255,0)
@@ -101,37 +103,74 @@ class Grid:
                 cells[i][j] = copy.deepcopy(cell)
                 cells[i][j].ID = str(uuid.uuid4())
         cells[1][1].alive = True
-        for i in cells:
-            for j in i:
-                j.setNeighbours()
     def renderCells():
         display.fill((0,0,255))
         x,y = 0,0
+        cellsToChange = []
         for i in cells:
             for j in i:
                 j.x = x; j.y = y
                 j.size = 18.75
-                j.renderCell(x, y)
+                # # # # # # # GAME RULES # # # # # # #
+                if j.alive and (j.neighbours == 2 or j.neighbours == 3) and game: 
+                    cellsToChange.append((j, True))
+                if j.alive and (j.neighbours != 2 and j.neighbours != 3) and game:
+                    cellsToChange.append((j, False))
+                if j.alive == False and j.neighbours == 3 and game: 
+                    cellsToChange.append((j, True))
+                j.renderCell(x, y, j.alive)
                 j.checkHover()
                 y+=20
             y=0; x+=20
+        if game:
+            for i in cellsToChange: 
+                i[0].alive = i[1]
+                print(i)
+            for i in cells:
+                for j in i:
+                    j.setNeighbours()
 
 Grid.initCells()
-while run:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            quit()
-        if event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:
-                for i in cells:
-                    for j in i:
-                        if j.checkHover():
-                            j.alive = not j.alive
-                            break
-                for i in cells:
-                    for j in i:
-                        j.setNeighbours()
-    
-    Grid.renderCells()
-    print(f"cells[1][1] neighbours: {cells[1][1].neighbours}")
-    pygame.display.update() 
+while True:
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    for i in cells:
+                        for j in i:
+                            if j.checkHover():
+                                j.alive = not j.alive
+                                break
+                    for i in cells:
+                        for j in i:
+                            j.setNeighbours()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    run = not run; game = not game
+        
+        Grid.renderCells()
+        # print(f"INITAL: cells[1][1] neighbours: {cells[1][1].neighbours}")
+        pygame.display.update() 
+
+    while game:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    for i in cells:
+                        for j in i:
+                            if j.checkHover():
+                                j.alive = not j.alive
+                                break
+                    for i in cells:
+                        for j in i:
+                            j.setNeighbours()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    run = not run; game = not game
+        Grid.renderCells()
+        # print(f"GAME: cells[1][1] neighbours: {cells[1][1].neighbours}")
+        pygame.display.update()
