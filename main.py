@@ -1,13 +1,3 @@
-"""
-Live cells:
-1. a live cell with zero or one live neighbours will die.
-2. a live cell with two or three live neighbours will remain alive
-3. a live cell with four or more live neighbours will die.
-Dead cells:
-1. a dead cell with exactly three live neighbours becomes alive
-2. in all other cases a dead cell will stay dead.
-"""  
-
 import pygame
 import copy
 import uuid
