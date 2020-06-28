@@ -102,7 +102,6 @@ class Grid:
                 # MUST COPY BECAUSE OTHER WISE IT IS THE EXACT, THE EXACTT FUCKING SAME DICTIONARY (or class now ig) FUCK YOU PYTHON YOU STUPID PIECE OF SHIT KYS FAG
                 cells[i][j] = copy.deepcopy(cell)
                 cells[i][j].ID = str(uuid.uuid4())
-        cells[1][1].alive = True
     def renderCells():
         display.fill((0,0,255))
         x,y = 0,0
