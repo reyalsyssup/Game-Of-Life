@@ -6,6 +6,7 @@ pygame.init()
 # I wouldnt reccomend changing this :)
 screenDimensions = (800, 600)
 display = pygame.display.set_mode(screenDimensions)
+pygame.display.set_caption("Game of Life")
 display.set_alpha(None)
 run = True
 game = False
