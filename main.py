@@ -1,11 +1,9 @@
 """
 Live cells:
-
 1. a live cell with zero or one live neighbours will die.
 2. a live cell with two or three live neighbours will remain alive
 3. a live cell with four or more live neighbours will die.
 Dead cells:
-
 1. a dead cell with exactly three live neighbours becomes alive
 2. in all other cases a dead cell will stay dead.
 """  
@@ -16,7 +14,7 @@ import uuid
 pygame.init()
 
 # I wouldnt reccomend changing this :)
-screenDimensions = (600, 600)
+screenDimensions = (800, 600)
 display = pygame.display.set_mode(screenDimensions)
 display.set_alpha(None)
 run = True
@@ -95,7 +93,7 @@ cell = Cell(False, 0, 0, 0, 0, False, "")
 class Grid:
     def initCells():
         global cells
-        cells = list(range(int(screenDimensions[1]/20)))
+        cells = list(range(int(screenDimensions[0]/20)))
         for i in range(len(cells)):
             cells[i] = list(range(int(screenDimensions[0]/20)))
             for j in range(len(cells[i])):
@@ -124,7 +122,6 @@ class Grid:
         if game:
             for i in cellsToChange: 
                 i[0].alive = i[1]
-                print(i)
             for i in cells:
                 for j in i:
                     j.setNeighbours()
