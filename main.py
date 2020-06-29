@@ -10,6 +10,8 @@ pygame.display.set_caption("Game of Life")
 display.set_alpha(None)
 run = True
 game = False
+clock = pygame.time.Clock()
+dt = clock.tick(60)
 
 cells = []
 
@@ -77,7 +79,6 @@ class Cell():
         self.neighbours = total
     def updateSurroundingNeighbours(self):
         me = [(ix,iy) for ix, row in enumerate(cells) for iy, i in enumerate(row) if i == self][0]
-        TR,BR,BL,TL,TM,BM,LM,RM = None,None,None,None,None,None,None,None
         # # # # # # # CORNERS # # # # # # # #
         try: 
             TR = cells[me[0]+1][me[1]-1]
@@ -126,7 +127,8 @@ class Grid:
                 cells[i][j] = copy.deepcopy(cell)
                 cells[i][j].ID = str(uuid.uuid4())
     def renderCells():
-        display.fill((0,0,255))
+        if not game: display.fill((255,0,0))
+        else: display.fill((0,255,0))
         x,y = 0,0
         cellsToChange = []
         for i in cells:
@@ -146,7 +148,8 @@ class Grid:
                 y+=20
             y=0; x+=20
         if game:
-            for i in cellsToChange: 
+            pygame.time.delay(3*dt)
+            for i in cellsToChange:
                 i[0].alive = i[1]
                 i[0].setNeighbours()
                 i[0].updateSurroundingNeighbours()
@@ -179,12 +182,12 @@ while True:
         pygame.display.update() 
 
     while game:
+        print(f"FPS: {dt}")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     run = not run; game = not game
-
         Grid.renderCells()
         pygame.display.update()
