@@ -1,6 +1,5 @@
 import pygame
 import copy
-import uuid
 pygame.init()
 
 # I wouldnt reccomend changing this :)
@@ -16,14 +15,13 @@ dt = clock.tick(60)
 cells = []
 
 class Cell():
-    def __init__(self, alive, neighbours, x, y, size, hovered, ID):
+    def __init__(self, alive, neighbours, x, y, size, hovered):
         self.alive = alive
         self.neighbours = neighbours
         self.x = x
         self.y = y
         self.size = size
         self.hovered = hovered
-        self.ID = ID
     def checkHover(self):
         pos = pygame.mouse.get_pos()
         if pos[0] > self.x and pos[0] < self.x + self.size and pos[1] > self.y and pos[1] < self.y + self.size:
@@ -115,7 +113,7 @@ class Cell():
             RM.setNeighbours()
         except: pass
                         
-cell = Cell(False, 0, 0, 0, 0, False, "")
+cell = Cell(False, 0, 0, 0, 0, False)
 
 class Grid:
     def initCells():
@@ -125,7 +123,6 @@ class Grid:
             cells[i] = list(range(int(screenDimensions[0]/20)))
             for j in range(len(cells[i])):
                 cells[i][j] = copy.deepcopy(cell)
-                cells[i][j].ID = str(uuid.uuid4())
     def renderCells():
         if not game: display.fill((255,0,0))
         else: display.fill((0,255,0))
@@ -182,7 +179,6 @@ while True:
         pygame.display.update() 
 
     while game:
-        print(f"FPS: {dt}")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
