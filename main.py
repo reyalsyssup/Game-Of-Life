@@ -9,8 +9,6 @@ pygame.display.set_caption("Game of Life")
 display.set_alpha(None)
 run = True
 game = False
-clock = pygame.time.Clock()
-dt = clock.tick(60)
 
 cells = []
 
@@ -120,7 +118,7 @@ class Grid:
         global cells
         cells = list(range(int(screenDimensions[0]/20)))
         for i in range(len(cells)):
-            cells[i] = list(range(int(screenDimensions[0]/20)))
+            cells[i] = list(range(int(screenDimensions[1]/20)))
             for j in range(len(cells[i])):
                 cells[i][j] = copy.deepcopy(cell)
     def renderCells():
@@ -145,7 +143,6 @@ class Grid:
                 y+=20
             y=0; x+=20
         if game:
-            pygame.time.delay(3*dt)
             for i in cellsToChange:
                 i[0].alive = i[1]
                 i[0].setNeighbours()
