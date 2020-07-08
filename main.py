@@ -1,5 +1,4 @@
-import pygame
-import copy
+import pygame, copy, pickle, os, sys
 pygame.init()
 
 # I wouldnt reccomend changing this :)
@@ -129,7 +128,7 @@ class Grid:
         for i in cells:
             for j in i:
                 j.x = x; j.y = y
-                j.size = 18.75
+                j.size = 19
                 # # # # # # # GAME RULES # # # # # # #
                 if game:
                     if j.alive and (j.neighbours == 2 or j.neighbours == 3): 
@@ -171,6 +170,27 @@ while True:
                 if event.key == pygame.K_r:
                     for i in cells:
                         for j in i: j.alive = False
+                if event.key == pygame.K_s:
+                    for i in cells:
+                        for j in i:
+                            j.setNeighbours()
+                    i = 0
+                    while os.path.exists("./saves/save%s.pickle" % i):
+                        i+=1
+                    pickleOut = open("./saves/save%s.pickle" % i, "wb")
+                    pickle.dump(cells, pickleOut)
+                    pickleOut.close()
+                if event.key == pygame.K_l:
+                    i = 0
+                    try: i = sys.argv[1]
+                    except:
+                        i = 0
+                        while os.path.exists("./saves/save%s.pickle" % i):
+                            i+=1
+                        i-=1
+                    pickleIn = open("./saves/save%s.pickle" % i, "rb")
+                    cells = pickle.load(pickleIn)
+                    pickleIn.close()
         
         Grid.renderCells()
         pygame.display.update() 
