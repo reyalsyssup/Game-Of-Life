@@ -1,4 +1,4 @@
-### Conway's game of life
+# Conway's game of life
 
 ## How to use:
 When the application is launched, you get the ability to place a pattern. You simply left click to make a cell alive or dead.<br />
@@ -17,4 +17,4 @@ This number will load the save with the corresponding number. eg:
 python3 main.py 4
 ```
 <br />
-This will load ```save4.pickle```
+This will load save4.pickle
